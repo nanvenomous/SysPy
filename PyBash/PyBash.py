@@ -3,8 +3,11 @@ from os import path
 import sys
 import getopt
 
-def getInputs():
-	return sys.argv[1:]
+def fail(): sys.exit(1)
+
+def succeed(): sys.exit(0)
+
+def getInputs(): return sys.argv[1:]
 
 def parseOptions(args, shortOpts, longOpts):
 	# checks that the option exists
@@ -16,8 +19,9 @@ def parseOptions(args, shortOpts, longOpts):
 			longOpts
 			)
 	except getopt.GetoptError as err:
-		print('ERROR:', err)
-		sys.exit(1) # exit with error
+		print('[BASH OPTS ERROR]')
+		print(err)
+		fail()
 
 class Directory():
 	def __init__(self):
@@ -49,9 +53,9 @@ class BashAPI():
 		# print output (if there are errors)
 		if error == '': return(output)
 		else:
-			print('[ERROR]')
+			print('[BASH ERROR]')
 			print(error)
-			sys.exit(1) # exit with error
+			fail()
 
 class Message():
 	def __init__(self, content, display=False):
@@ -59,4 +63,3 @@ class Message():
 		self.content = content
 	def smartPrint(self):
 		if self.display == True: print(self.content)
-
