@@ -1,6 +1,6 @@
 from subprocess import Popen, PIPE
+from os import path
 import sys
-import os
 import getopt
 
 def getInputs():
@@ -21,10 +21,12 @@ def parseOptions(args, shortOpts, longOpts):
 
 class Directory():
 	def __init__(self):
-		self.script = os.path.realpath(__file__)
-		self.here = os.path.dirname(self.script)
+		mainFile = path.abspath(sys.modules['__main__'].__file__)
+		self.mainDir = path.dirname(mainFile)
+		# print('MainDir: ', self.mainDir)
+
 	def relPath(self, partPath):
-		fullPath = ''.join([self.here, '/', partPath])
+		fullPath = ''.join([self.mainDir, '/', partPath])
 		return fullPath
 
 class BashAPI():
@@ -46,7 +48,10 @@ class BashAPI():
 		error = byteError.decode('utf-8')
 		# print output (if there are errors)
 		if error == '': return(output)
-		else: print(error); sys.exit(1) # exit with error
+		else:
+			print('[ERROR]')
+			print(error)
+			sys.exit(1) # exit with error
 
 class Message():
 	def __init__(self, content, display=False):
