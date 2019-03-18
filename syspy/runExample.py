@@ -1,5 +1,5 @@
 import sys
-from .syspy.tools import BashAPI, getInputs, editor
+from tools import BashAPI, getInputs, editor
 
 api = BashAPI('example/api.sh')
 
