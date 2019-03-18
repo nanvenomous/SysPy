@@ -5,7 +5,7 @@
 # Adding syspy to your system
 
 ### install
-> pip install -i https://test.pypi.org/simple/ syspy
+> pip3 install -i https://test.pypi.org/simple/ syspy
 
 ### upgrade
-> pip install --upgrade -i https://test.pypi.org/simple/ syspy
+> pip3 install --upgrade -i https://test.pypi.org/simple/ syspy

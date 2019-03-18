@@ -1,5 +1,5 @@
-from subprocess import Popen, PIPE
-from os import path
+from subprocess import Popen, PIPE, call
+from os import path, environ
 import sys
 import getopt
 
@@ -23,6 +23,13 @@ def parseOptions(args, shortOpts, longOpts):
 		print(err)
 		fail()
 
+def editor(name):
+	# create editor
+	vim = environ.get('EDITOR','vim')
+	# open file to read
+	with open(name, 'r+') as tf:
+		call([vim, tf.name])
+
 class Directory():
 	def __init__(self):
 		mainFile = path.abspath(sys.modules['__main__'].__file__)
@@ -34,6 +41,7 @@ class Directory():
 		return fullPath
 
 class BashAPI():
+	# input is file (path to shell script)
 	def __init__(self, file):
 		# get the full executable path of our bash api script
 		dir = Directory()
