@@ -44,6 +44,7 @@ class BashAPI():
 		# syntax to run a function within a bash script
 		command = ''.join(['. ', self.api, ' && ', function, ' '] + args)
 		# print(command)
+		# Popen explanation: https://pypi.org/project/bash/
 		# create a pipeline to a subprocess
 		pipe = Popen(['bash', '-c', command], stdout=PIPE, stdin=PIPE, stderr=PIPE)
 		# run command and gather output
