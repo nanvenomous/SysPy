@@ -4,7 +4,7 @@ with open("readme.md", "r") as fh:
 	long_description = fh.read()
 
 setuptools.setup(
-	name="PyBash",
+	name="syspy",
 	version="0.0.1",
 	author="Matthew Garelli",
 	author_email="mgarelli@alumni.stanford.edu",

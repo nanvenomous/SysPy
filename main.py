@@ -1,5 +1,5 @@
 import sys
-from PyBash.PyBash import BashAPI, getInputs
+from syspy import BashAPI, getInputs
 
 api = BashAPI('exampleApi.sh')
 
