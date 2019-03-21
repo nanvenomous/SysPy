@@ -17,6 +17,7 @@ function falseCommand() {
 }
 
 function delayedOutput() {
+	sleep 1
 	echo 'did a thing'
 	sleep 1
 	echo 'did another thing'
