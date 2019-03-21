@@ -20,7 +20,8 @@ function delayedOutput() {
 	sleep 1
 	echo 'did a thing'
 	sleep 1
-	echo 'did another thing'
+	echo 'this should fail'
+	ftdd
 	sleep 1
 	echo 'did a final thing'
 }

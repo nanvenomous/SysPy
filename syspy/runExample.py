@@ -9,6 +9,4 @@ api = BashAPI('example/api.sh')
 # output = api.cmd('falseCommand')
 output = api.cmd('delayedOutput')
 
-print(output)
-
-print('Made it to end')
+# print(output)

@@ -1,5 +1,7 @@
-from subprocess import Popen, PIPE, call
-from os import path, environ
+from subprocess import Popen, PIPE
+
+from select import select
+from os import path, environ, read
 import sys
 import getopt
 
@@ -54,11 +56,20 @@ class BashAPI():
 		print(command)
 		# Popen explanation: https://pypi.org/project/bash/
 
-		with open('test.log', 'w') as f:
-			pipe = Popen(['bash', '-c', command], stdout=PIPE, stdin=PIPE, stderr=PIPE)
-			for c in iter(lambda: pipe.stdout.read(1), b''):  # replace '' with b'' for Python 3
-				sys.stdout.write(c.decode('utf-8'))
-				f.write(c.decode('utf-8'))
+		# https://stackoverflow.com/questions/31926470/run-command-and-get-its-stdout-stderr-separately-in-near-real-time-like-in-a-te/31953436#31953436
+		with Popen(['bash', '-c', command], stdout=PIPE, stderr=PIPE) as p:
+			readable = {
+				p.stdout.fileno(): sys.stdout.buffer, # log separately
+				p.stderr.fileno(): sys.stderr.buffer,
+			}
+			while readable:
+				for fd in select(readable, [], [])[0]:
+						data = read(fd, 1024) # read available
+						if not data: # end of file
+							del readable[fd]
+						else: 
+							readable[fd].write(data)
+							readable[fd].flush()
 
 		# create a pipeline to a subprocess
 		# pipe = Popen(['bash', '-c', command], stdout=PIPE, stdin=PIPE, stderr=PIPE)
