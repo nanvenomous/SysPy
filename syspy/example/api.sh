@@ -15,3 +15,11 @@ function copyFile() {
 function falseCommand() {
 	ftdd
 }
+
+function delayedOutput() {
+	echo 'did a thing'
+	sleep 1
+	echo 'did another thing'
+	sleep 1
+	echo 'did a final thing'
+}
