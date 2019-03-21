@@ -53,18 +53,25 @@ class BashAPI():
 		command = ''.join(['. ', self.api, ' && ', function, ' '] + args)
 		print(command)
 		# Popen explanation: https://pypi.org/project/bash/
+
+		with open('test.log', 'w') as f:
+			pipe = Popen(['bash', '-c', command], stdout=PIPE, stdin=PIPE, stderr=PIPE)
+			for c in iter(lambda: pipe.stdout.read(1), b''):  # replace '' with b'' for Python 3
+				sys.stdout.write(c.decode('utf-8'))
+				f.write(c.decode('utf-8'))
+
 		# create a pipeline to a subprocess
-		pipe = Popen(['bash', '-c', command], stdout=PIPE, stdin=PIPE, stderr=PIPE)
+		# pipe = Popen(['bash', '-c', command], stdout=PIPE, stdin=PIPE, stderr=PIPE)
 		# run command and gather output
-		byteOutput, byteError = pipe.communicate()
-		output = byteOutput.decode('utf-8')
-		error = byteError.decode('utf-8')
+		# byteOutput, byteError = pipe.communicate()
+		# output = byteOutput.decode('utf-8')
+		# error = byteError.decode('utf-8')
 		# print output (if there are errors)
-		if error == '': return(output)
-		else:
-			print('[BASH ERROR]')
-			print(error)
-			fail()
+		# if error == '': return(output)
+		# else:
+			# print('[BASH ERROR]')
+			# print(error)
+			# fail()
 
 class Message():
 	def __init__(self, content, display=False):
