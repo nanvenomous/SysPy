@@ -1,4 +1,4 @@
-from subprocess import Popen, PIPE
+from subprocess import Popen, PIPE, call
 
 from select import select
 from os import path, environ, read
@@ -62,17 +62,24 @@ class BashAPI():
 				p.stdout.fileno(): sys.stdout.buffer, # log separately
 				p.stderr.fileno(): sys.stderr.buffer,
 			}
+			# print(readable) # 3 is a stdout and 5 is a stderr
 			while readable:
 				for fd in select(readable, [], [])[0]:
 						data = read(fd, 1024) # read available
-						if not data: # end of file
+						# print('data: ', data)
+						if not data: # handle end of file
 							del readable[fd]
+						elif (fd == 5): # handle the case of an error
+							print('[BASH ERROR]')
+							readable[fd].write(data)
+							readable[fd].flush()
+							fail()
 						else: 
 							readable[fd].write(data)
 							readable[fd].flush()
 
 		# create a pipeline to a subprocess
-		# pipe = Popen(['bash', '-c', command], stdout=PIPE, stdin=PIPE, stderr=PIPE)
+		# pipe = Popen(['bash', '-c', command], stdout=PIPE, stderr=PIPE)
 		# run command and gather output
 		# byteOutput, byteError = pipe.communicate()
 		# output = byteOutput.decode('utf-8')
