@@ -3,11 +3,15 @@ from tools import BashAPI, getInputs, editor
 
 api = BashAPI('example/api.sh')
 
-# output = api.cmd('copyFile', getInputs())
-# output = api.cmd('falseCommand')
-
+print('#### Check Editor Operation')
 editor('example/testFolder/file.txt')
+print()
 
-# print(output)
 
-print('Made it to end')
+print('#### Copy Filename')
+output = api.cmd('copyFile', args=getInputs())
+print(output)
+print()
+
+print('#### Test Delayed Output with Error')
+api.cmd('delayedOutput', realTime=True)

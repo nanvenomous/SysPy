@@ -8,4 +8,4 @@
 > pip3 install -i https://test.pypi.org/simple/ syspy
 
 ### upgrade
-> pip3 install --upgrade -i https://test.pypi.org/simple/ syspy
+> python3 -m pip install --upgrade -i https://test.pypi.org/simple/ syspy
