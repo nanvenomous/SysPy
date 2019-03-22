@@ -50,46 +50,47 @@ class BashAPI():
 		self.api = dir.relPath(file)
 
 	# runs a function within a bash script
-	def cmd(self, function, args=['']):
+	def cmd(self, function, args=[''], realTime=False):
 		# syntax to run a function within a bash script
 		command = ''.join(['. ', self.api, ' && ', function, ' '] + args)
-		print(command)
+		# print(command)
 		# Popen explanation: https://pypi.org/project/bash/
 
 		# https://stackoverflow.com/questions/31926470/run-command-and-get-its-stdout-stderr-separately-in-near-real-time-like-in-a-te/31953436#31953436
 		with Popen(['bash', '-c', command], stdout=PIPE, stderr=PIPE) as p:
-			readable = {
-				p.stdout.fileno(): sys.stdout.buffer, # log separately
-				p.stderr.fileno(): sys.stderr.buffer,
-			}
-			# print(readable) # 3 is a stdout and 5 is a stderr
-			while readable:
-				for fd in select(readable, [], [])[0]:
-						data = read(fd, 1024) # read available
-						# print('data: ', data)
-						if not data: # handle end of file
-							del readable[fd]
-						elif (fd == 5): # handle the case of an error
-							print('[BASH ERROR]')
-							readable[fd].write(data)
-							readable[fd].flush()
-							fail()
-						else: 
-							readable[fd].write(data)
-							readable[fd].flush()
-
-		# create a pipeline to a subprocess
-		# pipe = Popen(['bash', '-c', command], stdout=PIPE, stderr=PIPE)
-		# run command and gather output
-		# byteOutput, byteError = pipe.communicate()
-		# output = byteOutput.decode('utf-8')
-		# error = byteError.decode('utf-8')
-		# print output (if there are errors)
-		# if error == '': return(output)
-		# else:
-			# print('[BASH ERROR]')
-			# print(error)
-			# fail()
+			if (realTime):
+				readable = {
+					p.stdout.fileno(): sys.stdout.buffer, # log separately
+					p.stderr.fileno(): sys.stderr.buffer,
+				}
+				# print(readable) # 3 is a stdout and 5 is a stderr
+				while readable:
+					for fd in select(readable, [], [])[0]:
+							data = read(fd, 1024) # read available
+							# print('data: ', data)
+							if not data: # handle end of file
+								del readable[fd]
+							elif (fd == 5): # handle the case of an error
+								print('[BASH ERROR]')
+								readable[fd].write(data)
+								readable[fd].flush()
+								fail()
+							else: 
+								readable[fd].write(data)
+								readable[fd].flush()
+			else: # not real time output, simple pipe
+				# create a pipeline to a subprocess
+				# pipe = Popen(['bash', '-c', command], stdout=PIPE, stderr=PIPE)
+				# run command and gather output
+				byteOutput, byteError = p.communicate()
+				output = byteOutput.decode('utf-8')
+				error = byteError.decode('utf-8')
+				# print output (if there are errors)
+				if error == '': return(output)
+				else:
+					print('[BASH ERROR]')
+					print(error)
+					fail()
 
 class Message():
 	def __init__(self, content, display=False):
