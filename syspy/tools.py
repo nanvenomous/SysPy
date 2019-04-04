@@ -52,7 +52,7 @@ class BashAPI():
 	# runs a function within a bash script
 	def cmd(self, function, args=[''], realTime=False):
 		# syntax to run a function within a bash script
-		command = ''.join(['. ', self.api, ' && ', function, ' '] + args)
+		command = ' '.join(['.', self.api, '&&', function] + args)
 		# print(command)
 		# Popen explanation: https://pypi.org/project/bash/
 
