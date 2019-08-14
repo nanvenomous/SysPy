@@ -35,21 +35,21 @@ def editor(name):
 class Directory():
 	def __init__(self):
 		mainFile = path.abspath(sys.modules['__main__'].__file__)
-		self.mainDir = path.dirname(mainFile)
-		self.homePath = path.expanduser('~')
+		self.here = path.dirname(mainFile)
+		self.home = path.expanduser('~')
 
-	def relPath(self, partPath):
-		return path.join(self.mainDir, partPath)
+	def fromHere(self, partPath):
+		return path.join(self.here, partPath)
 
-	def usrPath(self, partPath):
-		return path.join(self.homePath, partPath)
+	def fromHome(self, partPath):
+		return path.join(self.home, partPath)
 
 class BashAPI():
 	# input is file (path to shell script)
 	def __init__(self, file):
 		# get the full executable path of our bash api script
 		dir = Directory()
-		self.api = dir.relPath(file)
+		self.api = dir.fromHere(file)
 
 	# runs a function within a bash script
 	def cmd(self, function, args=[''], realTime=False):
