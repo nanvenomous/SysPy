@@ -9,8 +9,6 @@ def fail(): sys.exit(1)
 
 def succeed(): sys.exit(0)
 
-def home(): return path.expanduser('~')
-
 def getInputs(): return sys.argv[1:]
 
 def parseOptions(args, shortOpts, longOpts):
@@ -38,11 +36,13 @@ class Directory():
 	def __init__(self):
 		mainFile = path.abspath(sys.modules['__main__'].__file__)
 		self.mainDir = path.dirname(mainFile)
-		# print('MainDir: ', self.mainDir)
+		self.homePath = path.expanduser('~')
 
 	def relPath(self, partPath):
-		fullPath = ''.join([self.mainDir, '/', partPath])
-		return fullPath
+		return path.join(self.mainDir, partPath)
+
+	def usrPath(self, partPath):
+		return path.join(self.homePath, partPath)
 
 class BashAPI():
 	# input is file (path to shell script)
