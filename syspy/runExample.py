@@ -1,7 +1,10 @@
 import sys
-from tools import BashAPI, getInputs, editor
+from tools import BashAPI, getInputs, editor, home
 
 api = BashAPI('example/api.sh')
+
+print('#### get home directory')
+print(home())
 
 print('#### Check Editor Operation')
 editor('example/testFolder/file.txt')

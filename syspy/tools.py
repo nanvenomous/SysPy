@@ -9,6 +9,8 @@ def fail(): sys.exit(1)
 
 def succeed(): sys.exit(0)
 
+def home(): return path.expanduser('~')
+
 def getInputs(): return sys.argv[1:]
 
 def parseOptions(args, shortOpts, longOpts):
