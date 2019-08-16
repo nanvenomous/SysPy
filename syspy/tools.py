@@ -1,7 +1,7 @@
 from subprocess import Popen, PIPE, call
 
 from select import select
-from os import path, environ, read
+from os import path, environ, read, mkdir, system
 import sys
 import getopt
 
@@ -25,11 +25,9 @@ def parseOptions(args, shortOpts, longOpts):
 		print(err)
 		fail()
 
-def editor(name):
-	# create editor
-	vim = environ.get('EDITOR','vim')
-	# open file to read
-	with open(name, 'r+') as tf:
+def vim(name):
+	vim = environ.get('EDITOR','vim') # create editor
+	with open(name, 'w+') as tf: # open file to write
 		call([vim, tf.name])
 
 class Directory():
@@ -43,6 +41,13 @@ class Directory():
 
 	def fromHome(self, partPath):
 		return path.join(self.home, partPath)
+
+	def make(self, path):
+		try:
+			mkdir(path)
+		except:
+			pass
+
 
 class BashAPI():
 	# input is file (path to shell script)
