@@ -21,16 +21,22 @@ def warn(msg):
 	print(context + msg)
 
 def parseOptions(args, shortOpts, longOpts):
-	# checks that the option exists
 	try:
-		# returns options and remainder (if success)
-		return getopt.getopt(
+		options, remainder = getopt.getopt(
 			args,
 			shortOpts,
 			longOpts
 			)
+		command = None
+		try:
+			command = remainder[0]
+			remainder = remainder[1:]
+		except:
+			remainder = None
+		return options, command, remainder
 	except getopt.GetoptError as err:
-		error(err)
+		print(err)
+		error('parsing the options failed')
 
 def vim(name):
 	vim = environ.get('EDITOR', 'vim') # create editor
