@@ -30,12 +30,10 @@ def parseOptions(args, shortOpts, longOpts):
 			longOpts
 			)
 	except getopt.GetoptError as err:
-		print('[BASH OPTS ERROR]')
-		print(err)
-		fail()
+		error(err)
 
 def vim(name):
-	vim = environ.get('EDITOR','vim') # create editor
+	vim = environ.get('EDITOR', 'vim') # create editor
 	def open_file_with_vim(permission):
 		with open(name, permission) as tf:
 			call([vim, tf.name])
