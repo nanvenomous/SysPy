@@ -1,29 +1,40 @@
 import sys
-from tools import BashAPI, getInputs, vim, Directory
+from tools import BashAPI, getInputs, vim, Directory, Shell
 
 api = BashAPI('example/api.sh')
+sh = Shell()
 
 print('#### get home directory')
-dir = Directory()
-print(dir.here)
-print(dir.fromHere('fromHere'))
-print(dir.home)
-print(dir.fromHome('fromHOME'))
+here = Directory()
+print(sh.home)
+print(sh.from_home('fromHome'))
 print()
 
+# print('#### Remove file')
+# sh.rm('example/testFolder/file.txt')
+# print()
+
 print('#### create directory if it doesnt exist')
-dir.make(dir.fromHere('example/testFolder'))
+sh.mkdir(here.to('example/testFolder'))
 print()
 
 print('#### Check Editor Operation')
 vim('example/testFolder/file.txt')
 print()
 
+# print('#### Create a symlink')
+# sh.link('example/testFolder/file.txt', 'ex')
+# print()
+
+# print('#### Make file executable')
+# sh.make_executable('example/testFolder/file.txt')
+# print()
 
 # print('#### Copy Filename')
 # output = api.cmd('copyFile', args=getInputs())
 # print(output)
 # print()
 
-print('#### Test Delayed Output with Error')
-api.cmd('delayedOutput', realTime=True)
+# print('#### Test Delayed Output with Error')
+# api.cmd('delayedOutput', realTime=True)
+# print()

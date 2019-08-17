@@ -1,7 +1,7 @@
 from subprocess import Popen, PIPE, call
 
 from select import select
-from os import path, environ, read, mkdir, system
+from os import path, environ, read, mkdir, system, remove, symlink
 import sys
 import getopt
 
@@ -10,6 +10,11 @@ def fail(): sys.exit(1)
 def succeed(): sys.exit(0)
 
 def getInputs(): return sys.argv[1:]
+
+def error(msg):
+	context = "\033[91m {}\033[00m".format('[BASH ERROR] ')
+	print(context + msg)
+	fail()
 
 def parseOptions(args, shortOpts, longOpts):
 	# checks that the option exists
@@ -27,26 +32,47 @@ def parseOptions(args, shortOpts, longOpts):
 
 def vim(name):
 	vim = environ.get('EDITOR','vim') # create editor
-	with open(name, 'w+') as tf: # open file to write
-		call([vim, tf.name])
+	def open_file_with_vim(permission):
+		with open(name, permission) as tf:
+			call([vim, tf.name])
+	try:
+		open_file_with_vim('r+') # open file to read
+	except:
+		open_file_with_vim('w+') # open file to write
 
-class Directory():
+class Shell():
 	def __init__(self):
-		mainFile = path.abspath(sys.modules['__main__'].__file__)
-		self.here = path.dirname(mainFile)
 		self.home = path.expanduser('~')
 
-	def fromHere(self, partPath):
-		return path.join(self.here, partPath)
+	def rm(self, file): remove(file)
 
-	def fromHome(self, partPath):
+	def from_home(self, partPath):
 		return path.join(self.home, partPath)
 
-	def make(self, path):
+	def mkdir(self, path):
 		try:
 			mkdir(path)
 		except:
 			pass
+
+	def make_executable(self, file):
+		system('chmod +x ' + file)
+
+	def link(self, src, dest):
+		symlink(src, dest)
+
+class Directory():
+	def __init__(self, *args):
+		if (len(args) > 1):
+			error('too many input arguments')
+		if (args):
+			self.path = args[0]
+		else:
+			mainFile = path.abspath(sys.modules['__main__'].__file__)
+			self.path = path.dirname(mainFile)
+
+	def to(self, partPath):
+		return path.join(self.path, partPath)
 
 
 class BashAPI():
@@ -54,7 +80,7 @@ class BashAPI():
 	def __init__(self, file):
 		# get the full executable path of our bash api script
 		dir = Directory()
-		self.api = dir.fromHere(file)
+		self.api = dir.to(file)
 
 	# runs a function within a bash script
 	def cmd(self, function, args=[''], realTime=False):
