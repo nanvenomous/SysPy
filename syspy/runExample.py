@@ -1,5 +1,5 @@
 import sys
-from tools import BashAPI, getInputs, vim, Directory, Shell
+from tools import BashAPI, getInputs, vim, Directory, Shell, warn
 
 api = BashAPI('example/api.sh')
 sh = Shell()
@@ -20,6 +20,10 @@ print()
 
 print('#### Check Editor Operation')
 vim('example/testFolder/file.txt')
+print()
+
+print('#### Print a warning message')
+warn('you have been warned')
 print()
 
 # print('#### Create a symlink')

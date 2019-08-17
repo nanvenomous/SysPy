@@ -12,9 +12,13 @@ def succeed(): sys.exit(0)
 def getInputs(): return sys.argv[1:]
 
 def error(msg):
-	context = "\033[91m {}\033[00m".format('[BASH ERROR] ')
+	context = "\033[91m {}\033[00m".format('[ERROR] ')
 	print(context + msg)
 	fail()
+
+def warn(msg):
+	context = "\033[33m {}\033[00m".format('[WARNING] ')
+	print(context + msg)
 
 def parseOptions(args, shortOpts, longOpts):
 	# checks that the option exists
