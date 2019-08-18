@@ -51,8 +51,16 @@ def vim(name):
 class Shell():
 	def __init__(self):
 		self.home = path.expanduser('~')
+		self.verbose = False
 
-	def rm(self, file): remove(file)
+	def command(self, cmd_list):
+		cmd = ' '.join(cmd_list)
+		if self.verbose: print(cmd)
+		system(cmd)
+
+	def rm(self, file):
+		if self.verbose: print('removing: ', file)
+		remove(file)
 
 	def from_home(self, partPath):
 		return path.join(self.home, partPath)
@@ -60,8 +68,9 @@ class Shell():
 	def mkdir(self, path):
 		try:
 			mkdir(path)
+			if self.verbose: print('made directory: ', path)
 		except:
-			pass
+			if self.verbose: print('failed to make directory: ', path)
 
 	def make_executable(self, file):
 		system('chmod +x ' + file)

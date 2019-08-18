@@ -5,7 +5,7 @@ with open("readme.md", "r") as fh:
 
 setuptools.setup(
 	name="syspy",
-	version="0.0.17",
+	version="0.0.19",
 	author="Matthew Garelli",
 	author_email="mgarelli@alumni.stanford.edu",
 	description="A module to do certain unix system tasks",
