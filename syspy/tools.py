@@ -9,7 +9,20 @@ def fail(): sys.exit(1)
 
 def succeed(): sys.exit(0)
 
-def getInputs(): return sys.argv[1:]
+def getInputs(): sys.argv[1:]
+	# inputs = sys.argv[1:]
+	# if args:
+	# 	possible_arg_nums = args[0]
+	# 	if len(inputs) in possible_arg_nums:
+	# 		return inputs
+	# 	else:
+	# 		# message = ' '.join(['expected number of input arguments to be one of:'] + \
+	# 		# 	[str(num) + ',' for num in possible_arg_nums])
+	# 		# error(message)
+	# 		message = ' '.join(['incorrect input quantity \n should be one of:'] + \
+	# 			[str(possible_arg_nums)])
+	# 		error(message)
+	# return inputs
 
 def error(msg):
 	context = "\033[91m {}\033[00m".format('[ERROR] ')
@@ -19,6 +32,53 @@ def error(msg):
 def warn(msg):
 	context = "\033[33m {}\033[00m".format('[WARNING] ')
 	print(context + msg)
+
+def os():
+	if sys.platform == 'linux' or sys.platform == 'linux2':
+		return 'linux'
+	elif sys.platform == 'darwin':
+		return 'mac'
+	elif sys.platform == 'win32':
+		return 'windows'
+	else:
+		return None
+
+class Shell():
+	def __init__(self):
+		self.home = path.expanduser('~')
+		self.verbose = False
+		self.os = os()
+
+	def command(self, cmd_list):
+		cmd = ' '.join(cmd_list)
+		if self.verbose: print(cmd)
+		system(cmd)
+
+	def rm(self, file):
+		if self.verbose: print('removing: ', file)
+		remove(file)
+
+	def from_home(self, partPath):
+		return path.join(self.home, partPath)
+
+	def mkdir(self, path):
+		try:
+			mkdir(path)
+			if self.verbose: print('made directory: ', path)
+		except:
+			if self.verbose: print('failed to make directory: ', path)
+
+	def make_executable(self, file):
+		self.command(['chmod +x ', file])
+
+	def link(self, src, dest):
+		symlink(src, dest)
+
+	def chrome(self, url):
+		if self.os == 'linux':
+			self.command(['/usr/bin/chromium-browser', '&>/dev/null', url])
+		elif self.os == 'mac':
+			error('no mac implementation yet')
 
 def parseOptions(args, shortOpts, longOpts):
 	try:
@@ -47,36 +107,6 @@ def vim(name):
 		open_file_with_vim('r+') # open file to read
 	except:
 		open_file_with_vim('w+') # open file to write
-
-class Shell():
-	def __init__(self):
-		self.home = path.expanduser('~')
-		self.verbose = False
-
-	def command(self, cmd_list):
-		cmd = ' '.join(cmd_list)
-		if self.verbose: print(cmd)
-		system(cmd)
-
-	def rm(self, file):
-		if self.verbose: print('removing: ', file)
-		remove(file)
-
-	def from_home(self, partPath):
-		return path.join(self.home, partPath)
-
-	def mkdir(self, path):
-		try:
-			mkdir(path)
-			if self.verbose: print('made directory: ', path)
-		except:
-			if self.verbose: print('failed to make directory: ', path)
-
-	def make_executable(self, file):
-		system('chmod +x ' + file)
-
-	def link(self, src, dest):
-		symlink(src, dest)
 
 class Directory():
 	def __init__(self, *args):
@@ -141,10 +171,3 @@ class BashAPI():
 					print('[BASH ERROR]')
 					print(error)
 					fail()
-
-class Message():
-	def __init__(self, content, display=False):
-		self.display = display
-		self.content = content
-	def smartPrint(self):
-		if self.display == True: print(self.content)
