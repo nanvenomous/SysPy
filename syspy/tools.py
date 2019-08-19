@@ -10,19 +10,6 @@ def fail(): sys.exit(1)
 def succeed(): sys.exit(0)
 
 def getInputs(): return sys.argv[1:]
-	# inputs = sys.argv[1:]
-	# if args:
-	# 	possible_arg_nums = args[0]
-	# 	if len(inputs) in possible_arg_nums:
-	# 		return inputs
-	# 	else:
-	# 		# message = ' '.join(['expected number of input arguments to be one of:'] + \
-	# 		# 	[str(num) + ',' for num in possible_arg_nums])
-	# 		# error(message)
-	# 		message = ' '.join(['incorrect input quantity \n should be one of:'] + \
-	# 			[str(possible_arg_nums)])
-	# 		error(message)
-	# return inputs
 
 def error(msg):
 	context = "\033[91m {}\033[00m".format('[ERROR] ')
@@ -76,7 +63,7 @@ class Shell():
 
 	def chrome(self, url):
 		if self.os == 'linux':
-			self.command(['/usr/bin/chromium-browser', '&>/dev/null', url])
+			self.command(['/usr/bin/chromium-browser', url, '&>/dev/null'])
 		elif self.os == 'mac':
 			error('no mac implementation yet')
 

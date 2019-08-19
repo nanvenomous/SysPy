@@ -41,11 +41,11 @@ def make_file_executable():
 	sh.make_executable('example/testFolder/file.txt')
 	print()
 
-# def test_gather_inputs():
-# 	print('#### Throw error if incorrect number of inputs')
-# 	inps = getInputs([1, 2])
-# 	print('you gathered these inputs: ', inps)
-# 	print()
+def open_file_in_browser():
+	print('#### Open file in browser')
+	# sh.chrome('example/ex.md')
+	sh.chrome(getInputs()[0])
+	print()
 
 get_home_directory()
 # remove_file()
@@ -54,3 +54,4 @@ create_directory_if_nonexistent()
 print_example_warning()
 # make_symbolic_link()
 # make_file_executable()
+open_file_in_browser()
