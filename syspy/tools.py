@@ -63,7 +63,12 @@ class Shell():
 
 	def chrome(self, url):
 		if self.os == 'linux':
-			self.command(['/usr/bin/chromium-browser', url, '&>/dev/null'])
+			self.command([
+				'/usr/bin/chromium-browser',
+				'--disable-features=NetworkService',
+				url,
+				'&>/dev/null'
+				])
 		elif self.os == 'mac':
 			error('no mac implementation yet')
 
