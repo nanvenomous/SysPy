@@ -9,7 +9,7 @@ def fail(): sys.exit(1)
 
 def succeed(): sys.exit(0)
 
-def getInputs(): sys.argv[1:]
+def getInputs(): return sys.argv[1:]
 	# inputs = sys.argv[1:]
 	# if args:
 	# 	possible_arg_nums = args[0]
