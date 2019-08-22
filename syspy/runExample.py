@@ -1,5 +1,5 @@
 import sys
-from tools import BashAPI, getInputs, vim, Directory, Shell, warn
+from tools import BashAPI, getInputs, vim, Directory, Shell, validate
 
 api = BashAPI('example/api.sh')
 sh = Shell()
@@ -26,9 +26,9 @@ def open_file_in_editor():
 	vim('example/testFolder/file.txt')
 	print()
 
-def print_example_warning():
-	print('#### Print a warning message')
-	warn('you have been warned')
+def print_example_validation():
+	print('#### Print a validation message')
+	validate('things are looking good for you')
 	print()
 
 def make_symbolic_link():
@@ -44,14 +44,14 @@ def make_file_executable():
 def open_file_in_browser():
 	print('#### Open file in browser')
 	# sh.chrome('example/ex.md')
-	sh.chrome(getInputs()[0])
+	sh.chrome('dogs.com')
 	print()
 
 get_home_directory()
 # remove_file()
 create_directory_if_nonexistent()
 # open_file_in_editor()
-print_example_warning()
+print_example_validation()
 # make_symbolic_link()
 # make_file_executable()
 open_file_in_browser()
