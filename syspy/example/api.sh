@@ -1,6 +1,5 @@
 hr="${PWD}"
 testLoc="${hr}/example/testFolder"
-toCopy="${testLoc}/file.txt"
 other="${testLoc}/other.txt"
 
 function gitStatus() {
@@ -9,7 +8,7 @@ function gitStatus() {
 
 function copyFile() {
 	echo 'Copying file.txt'
-	cp "${toCopy}" "${@}"
+	cp "${1}" "${2}"
 }
 
 function delayedOutput() {

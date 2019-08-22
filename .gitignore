@@ -1,5 +1,4 @@
 *.pyc
-__init__.py
 build
 dist
 syspy.egg-info
