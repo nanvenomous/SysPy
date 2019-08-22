@@ -64,7 +64,7 @@ class Shell():
       if self.verbose: print('failed to make directory: ', path)
 
   def make_executable(self, file):
-    self.command(['chmod +x ', file])
+    self.command(['chmod +x', file])
 
   def link(self, src, dest):
     symlink(src, dest)
@@ -121,53 +121,44 @@ class Directory():
   def to(self, partPath):
     return path.join(self.path, partPath)
 
+def source_executables():
+  here = Directory()
+  binDir = Directory(here.to('bin'))
+  srcDir = Directory(here.to('src'))
+  sh = Shell()
 
-class BashAPI():
-  # input is file (path to shell script)
-  def __init__(self, file):
-    # get the full executable path of our bash api script
-    dir = Directory()
-    self.api = dir.to(file)
+  sh.mkdir(binDir.path)
 
-  # runs a function within a bash script
-  def cmd(self, function, args=[''], realTime=False):
-    # syntax to run a function within a bash script
-    command = ' '.join(['.', self.api, '&&', function] + args)
-    # print(command)
-    # Popen explanation: https://pypi.org/project/bash/
+  sources = set(listdir(srcDir.path))
+  executables = set(listdir(binDir.path))
+  unlinked_sources = list(sources - executables)
+  executables_to_clean = list(executables - sources)
 
-    # https://stackoverflow.com/questions/31926470/run-command-and-get-its-stdout-stderr-separately-in-near-real-time-like-in-a-te/31953436#31953436
-    with Popen(['bash', '-c', command], stdout=PIPE, stderr=PIPE) as p:
-      if (realTime):
-        readable = {
-          p.stdout.fileno(): sys.stdout.buffer, # log separately
-          p.stderr.fileno(): sys.stderr.buffer,
-        }
-        # print(readable) # 3 is a stdout and 5 is a stderr
-        while readable:
-          for fd in select(readable, [], [])[0]:
-              data = read(fd, 1024) # read available
-              # print('data: ', data)
-              if not data: # handle end of file
-                del readable[fd]
-              elif (fd == 5): # handle the case of an error
-                print('[BASH ERROR]')
-                readable[fd].write(data)
-                readable[fd].flush()
-                fail()
-              else: 
-                readable[fd].write(data)
-                readable[fd].flush()
-      else: # not real time output, simple pipe
-        # create a pipeline to a subprocess
-        # pipe = Popen(['bash', '-c', command], stdout=PIPE, stderr=PIPE)
-        # run command and gather output
-        byteOutput, byteError = p.communicate()
-        output = byteOutput.decode('utf-8')
-        error = byteError.decode('utf-8')
-        # print output (if there are errors)
-        if error == '': return(output)
-        else:
-          print('[BASH ERROR]')
-          print(error)
-          fail()
+  # remove unecessary executables
+  for exe in executables_to_clean:
+    sh.rm(binDir.to(exe))
+
+  # helper
+  def get_correct_source(pkg):
+    pkgDir = Directory(srcDir.to(pkg))
+    srcFile = pkg + '.sh'
+    if (srcFile in listdir(pkgDir.path)):
+      return pkgDir.to(srcFile)
+    srcFile = pkg + '.py'
+    if (srcFile in listdir(pkgDir.path)):
+      return pkgDir.to(srcFile)
+    error('could not find correct file type in: \n\t' + pkgDir.path)
+
+  # make every source file executable
+  for pkg in sources:
+    source = get_correct_source(pkg)
+    sh.make_executable(source)
+
+  # link all sources to executables
+  for pkg in unlinked_sources:
+    source = get_correct_source(pkg)
+    destination = binDir.to(pkg)
+    sh.link(source, destination)
+    print(source, ' <--> ', destination)
+
+  validate('sourced executables at: ' + here.path)

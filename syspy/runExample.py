@@ -1,5 +1,4 @@
-import sys
-from tools import BashAPI, getInputs, vim, Directory, Shell, validate
+from tools import getInputs, vim, Directory, Shell, validate
 
 api = BashAPI('example/api.sh')
 sh = Shell()
