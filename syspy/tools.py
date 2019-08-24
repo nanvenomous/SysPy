@@ -1,9 +1,8 @@
-from subprocess import Popen, PIPE, call
-
-from select import select
-from os import path, environ, read, mkdir, system, remove, symlink
+from os import path, environ, read, mkdir, system, remove, symlink, listdir
 import sys
 import getopt
+from subprocess import call
+from select import select
 
 def fail(): sys.exit(1)
 
@@ -12,12 +11,16 @@ def succeed(): sys.exit(0)
 def getInputs(): return sys.argv[1:]
 
 def error(msg):
-	context = "\033[91m {}\033[00m".format('[ERROR] ')
+	context = '\033[91m {}\033[00m'.format('[ERROR] ')
 	print(context + msg)
 	fail()
 
 def warn(msg):
-	context = "\033[33m {}\033[00m".format('[WARNING] ')
+	context = '\033[33m {}\033[00m'.format('[WARNING] ')
+	print(context + msg)
+
+def validate(msg):
+	context = '\033[92m {}\033[00m'.format('[LIT] ')
 	print(context + msg)
 
 def os():
@@ -41,6 +44,14 @@ class Shell():
 		if self.verbose: print(cmd)
 		system(cmd)
 
+	def exists(self, pth): # check for path of directory
+		if self.verbose: print('Checking the existance of path: ', pth)
+		return path.exists(pth)
+
+	def ls(self, pth):
+		if self.verbose: print('Listing files in directory: ', pth)
+		return listdir(pth)
+
 	def rm(self, file):
 		if self.verbose: print('removing: ', file)
 		remove(file)
@@ -48,15 +59,15 @@ class Shell():
 	def from_home(self, partPath):
 		return path.join(self.home, partPath)
 
-	def mkdir(self, path):
+	def mkdir(self, pth):
 		try:
-			mkdir(path)
-			if self.verbose: print('made directory: ', path)
+			mkdir(pth)
+			if self.verbose: print('made directory: ', pth)
 		except:
-			if self.verbose: print('failed to make directory: ', path)
+			if self.verbose: print('failed to make directory: ', pth)
 
 	def make_executable(self, file):
-		self.command(['chmod +x ', file])
+		self.command(['chmod +x', file])
 
 	def link(self, src, dest):
 		symlink(src, dest)
