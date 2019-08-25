@@ -1,12 +1,11 @@
-from tools import getInputs, vim, Directory, Shell, validate
+from tools import getInputs, vim, Shell, validate, extend
 
 sh = Shell()
-here = Directory()
 
 def get_home_directory():
   print('#### get home directory')
   print(sh.home)
-  print(sh.from_home('fromHome'))
+  print(extend(sh.home, 'fromHome'))
   print()
 
 def remove_file():
@@ -16,7 +15,7 @@ def remove_file():
 
 def create_directory_if_nonexistent():
   print('#### create directory if it doesnt exist')
-  sh.mkdir(here.to('example/testFolder'))
+  sh.mkdir(extend(sh.main, 'example/testFolder'))
   print()
 
 def open_file_in_editor():
@@ -41,7 +40,7 @@ def make_file_executable():
 
 def list_files_in_directory():
   print('#### List all files in a directory')
-  dir_files = sh.ls(here.path)
+  dir_files = sh.ls(sh.main)
   print(dir_files)
   print()
 
@@ -49,6 +48,11 @@ def open_file_in_browser():
   print('#### Open file in browser')
   # sh.chrome('example/ex.md')
   sh.chrome('dogs.com')
+  print()
+
+def find_pattern_in_directory():
+  print('#### find_pattern_in_directory')
+  print(sh.find('*.py'))
   print()
 
 get_home_directory()
@@ -59,4 +63,5 @@ print_example_validation()
 # make_symbolic_link()
 # make_file_executable()
 list_files_in_directory()
-open_file_in_browser()
+# open_file_in_browser()
+find_pattern_in_directory()

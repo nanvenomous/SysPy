@@ -1,6 +1,5 @@
-from os import path, environ, read, mkdir, system, remove, symlink, listdir, getcwd
-import sys
-import getopt
+import getopt, os, sys
+from glob import glob
 from subprocess import call
 from select import select
 
@@ -24,9 +23,9 @@ def validate(msg):
 	print(context + msg)
 
 def extend(loc, extenstion):
-	return path.join(loc, extenstion)
+	return os.path.join(loc, extenstion)
 
-def os():
+def which_os():
 	if sys.platform == 'linux' or sys.platform == 'linux2':
 		return 'linux'
 	elif sys.platform == 'darwin':
@@ -39,47 +38,17 @@ def os():
 class Shell():
 	def __init__(self):
 		# relevant directories
-		self.home = path.expanduser('~')
-		mainFile = path.abspath(sys.modules['__main__'].__file__)
-		self.main = path.dirname(mainFile)
-		self.working = getcwd()
+		self.home = os.path.expanduser('~')
+		mainFile = os.path.abspath(sys.modules['__main__'].__file__)
+		self.main = os.path.dirname(mainFile)
+		self.working = os.getcwd()
 		# option from command line
 		self.verbose = False
 		# operating system type
-		self.os = os()
+		self.os = which_os()
 
-	def command(self, cmd_list):
-		cmd = ' '.join(cmd_list)
-		if self.verbose: print(cmd)
-		system(cmd)
-
-	def exists(self, pth): # check for path of directory
-		if self.verbose: print('Checking the existance of path: ', pth)
-		return path.exists(pth)
-
-	def ls(self, pth):
-		if self.verbose: print('Listing files in directory: ', pth)
-		return listdir(pth)
-
-	def rm(self, file):
-		if self.verbose: print('removing: ', file)
-		remove(file)
-
-	def from_home(self, partPath):
-		return path.join(self.home, partPath)
-
-	def mkdir(self, pth):
-		try:
-			mkdir(pth)
-			if self.verbose: print('made directory: ', pth)
-		except:
-			if self.verbose: print('failed to make directory: ', pth)
-
-	def make_executable(self, file):
-		self.command(['chmod +x', file])
-
-	def link(self, src, dest):
-		symlink(src, dest)
+	def cd(self, path):
+		os.chdir(path)
 
 	def chrome(self, url):
 		if self.os == 'linux':
@@ -91,6 +60,40 @@ class Shell():
 				])
 		elif self.os == 'mac':
 			error('no mac implementation yet')
+
+	def command(self, cmd_list):
+		cmd = ' '.join(cmd_list)
+		if self.verbose: print(cmd)
+		os.system(cmd)
+
+	def exists(self, path): # check for path of directory
+		if self.verbose: print('Checking the existance of path: ', path)
+		return os.path.exists(path)
+
+	def find(self, pattern, path=None):
+		if path != None: self.cd(path)
+		return glob(pattern)
+
+	def link(self, src, dest):
+		os.symlink(src, dest)
+
+	def ls(self, path):
+		if self.verbose: print('Listing files in directory: ', path)
+		return os.listdir(path)
+
+	def make_executable(self, file):
+		self.command(['chmod +x', file])
+
+	def mkdir(self, path):
+		try:
+			os.mkdir(path)
+			if self.verbose: print('made directory: ', path)
+		except:
+			if self.verbose: print('failed to make directory: ', path)
+
+	def rm(self, file):
+		if self.verbose: print('removing: ', file)
+		os.remove(file)
 
 def parseOptions(args, shortOpts, longOpts):
 	try:
@@ -111,7 +114,7 @@ def parseOptions(args, shortOpts, longOpts):
 		error('parsing the options failed')
 
 def vim(name):
-	vim = environ.get('EDITOR', 'vim') # create editor
+	vim = os.environ.get('EDITOR', 'vim') # create editor
 	def open_file_with_vim(permission):
 		with open(name, permission) as tf:
 			call([vim, tf.name])
