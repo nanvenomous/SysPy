@@ -4,8 +4,13 @@ sh = Shell()
 
 def get_home_directory():
   print('#### get home directory')
+  sh.verbose = True
   print(sh.home)
-  print(extend(sh.home, 'fromHome'))
+  new_path = extend(sh.home, 'fromHome')
+  print(new_path)
+  sh.dirname(new_path)
+  sh.basename(new_path)
+  sh.verbose = False
   print()
 
 def remove_file():
@@ -52,6 +57,7 @@ def open_file_in_browser():
 
 def find_pattern_in_directory():
   print('#### find_pattern_in_directory')
+  sh.verbose = True
   print(sh.find('*.py'))
   print()
 

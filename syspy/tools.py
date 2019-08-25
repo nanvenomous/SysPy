@@ -39,15 +39,24 @@ class Shell():
 	def __init__(self):
 		# relevant directories
 		self.home = os.path.expanduser('~')
-		mainFile = os.path.abspath(sys.modules['__main__'].__file__)
-		self.main = os.path.dirname(mainFile)
 		self.working = os.getcwd()
+		self.main = None
+		try:
+			mainFile = os.path.abspath(sys.modules['__main__'].__file__)
+			self.main = os.path.dirname(mainFile)
+		except: warn('no main file path, interactive interpreter')
 		# option from command line
 		self.verbose = False
 		# operating system type
 		self.os = which_os()
 
+	def basename(self, path):
+		basename = os.path.basename(path)
+		if self.verbose: print('Basename of ', path, ' is ', basename)
+		return basename
+
 	def cd(self, path):
+		if self.verbose: print('Changing directory to: ', path)
 		os.chdir(path)
 
 	def chrome(self, url):
@@ -66,12 +75,20 @@ class Shell():
 		if self.verbose: print(cmd)
 		os.system(cmd)
 
+	def dirname(self, path):
+		dirname = os.path.dirname(path)
+		if self.verbose: print('Dirname of ', path, ' is ', dirname)
+		return dirname
+
 	def exists(self, path): # check for path of directory
 		if self.verbose: print('Checking the existance of path: ', path)
 		return os.path.exists(path)
 
 	def find(self, pattern, path=None):
 		if path != None: self.cd(path)
+		if self.verbose:
+			print('Searching recursively in directory: ', path if path else self.working)
+			print('\tfor pattern: ', pattern)
 		return glob('**/' + pattern, recursive=True)
 
 	def link(self, src, dest):
