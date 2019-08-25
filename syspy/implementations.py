@@ -1,7 +1,7 @@
 from .tools import Shell, error, validate, warn, extend
-sh = Shell()
 
 def source_executables():
+	sh = Shell()
 	binDir = extend(sh.main, 'bin')
 	srcDir = extend(sh.main, 'src')
 
