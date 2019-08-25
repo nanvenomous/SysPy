@@ -72,7 +72,7 @@ class Shell():
 
 	def find(self, pattern, path=None):
 		if path != None: self.cd(path)
-		return glob(pattern)
+		return glob('**/' + pattern, recursive=True)
 
 	def link(self, src, dest):
 		os.symlink(src, dest)
