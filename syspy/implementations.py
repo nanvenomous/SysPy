@@ -1,36 +1,34 @@
-from .tools import Shell, Directory, error, validate, warn
+from .tools import Shell, error, validate, warn, extend
 sh = Shell()
 
 def source_executables():
-	here = Directory()
-	binDir = Directory(here.to('bin'))
-	srcDir = Directory(here.to('src'))
-	sh = Shell()
+	binDir = extend(sh.main, 'bin')
+	srcDir = extend(sh.main, 'src')
 
-	sh.mkdir(binDir.path)
+	sh.mkdir(binDir)
 
-	if not sh.exists(srcDir.path): # no source, can't run
-		warn('no source to convert to executables at: ' + here.path)
+	if not sh.exists(srcDir): # no source, can't run
+		warn('no source to convert to executables at: ' + sh.main)
 		return
-	sources = set(sh.ls(srcDir.path))
-	executables = set(sh.ls(binDir.path))
+	sources = set(sh.ls(srcDir))
+	executables = set(sh.ls(binDir))
 	unlinked_sources = list(sources - executables)
 	executables_to_clean = list(executables - sources)
 
 	# remove unecessary executables
 	for exe in executables_to_clean:
-		sh.rm(binDir.to(exe))
+		sh.rm(extend(binDir, exe))
 
 	# helper
 	def get_correct_source(pkg):
-		pkgDir = Directory(srcDir.to(pkg))
+		pkgDir = extend(srcDir, pkg)
 		srcFile = pkg + '.sh'
-		if (srcFile in sh.ls(pkgDir.path)):
-			return pkgDir.to(srcFile)
+		if (srcFile in sh.ls(pkgDir)):
+			return extend(pkgDir, srcFile)
 		srcFile = pkg + '.py'
-		if (srcFile in sh.ls(pkgDir.path)):
-			return pkgDir.to(srcFile)
-		error('could not find correct file type in: \n\t' + pkgDir.path)
+		if (srcFile in sh.ls(pkgDir)):
+			return extend(pkgDir, srcFile)
+		error('could not find correct file type in: \n\t' + pkgDir)
 
 	# make every source file executable
 	for pkg in sources:
@@ -40,8 +38,8 @@ def source_executables():
 	# link all sources to executables
 	for pkg in unlinked_sources:
 		source = get_correct_source(pkg)
-		destination = binDir.to(pkg)
+		destination = extend(binDir, pkg)
 		sh.link(source, destination)
 		print(source, ' <--> ', destination)
 
-	validate('source --> executables at: ' + here.path)
+	validate('source --> executables at: ' + sh.main)

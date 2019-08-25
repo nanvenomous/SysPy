@@ -1,4 +1,4 @@
-from os import path, environ, read, mkdir, system, remove, symlink, listdir
+from os import path, environ, read, mkdir, system, remove, symlink, listdir, getcwd
 import sys
 import getopt
 from subprocess import call
@@ -23,6 +23,9 @@ def validate(msg):
 	context = '\033[92m {}\033[00m'.format('[LIT] ')
 	print(context + msg)
 
+def extend(loc, extenstion):
+	return path.join(loc, extenstion)
+
 def os():
 	if sys.platform == 'linux' or sys.platform == 'linux2':
 		return 'linux'
@@ -35,8 +38,14 @@ def os():
 
 class Shell():
 	def __init__(self):
+		# relevant directories
 		self.home = path.expanduser('~')
+		mainFile = path.abspath(sys.modules['__main__'].__file__)
+		self.main = path.dirname(mainFile)
+		self.working = getcwd()
+		# option from command line
 		self.verbose = False
+		# operating system type
 		self.os = os()
 
 	def command(self, cmd_list):
@@ -110,19 +119,6 @@ def vim(name):
 		open_file_with_vim('r+') # open file to read
 	except:
 		open_file_with_vim('w+') # open file to write
-
-class Directory():
-	def __init__(self, *args):
-		if (len(args) > 1):
-			error('too many input arguments')
-		if (args):
-			self.path = args[0]
-		else:
-			mainFile = path.abspath(sys.modules['__main__'].__file__)
-			self.path = path.dirname(mainFile)
-
-	def to(self, partPath):
-		return path.join(self.path, partPath)
 
 # supressing stdout
 # https://stackoverflow.com/questions/2828953/silence-the-stdout-of-a-function-in-python-without-trashing-sys-stdout-and-resto
