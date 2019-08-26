@@ -25,7 +25,7 @@ def validate(msg):
 def extend(loc, extenstion):
 	return os.path.join(loc, extenstion)
 
-def which_os():
+def _which_os():
 	if sys.platform == 'linux' or sys.platform == 'linux2':
 		return 'linux'
 	elif sys.platform == 'darwin':
@@ -34,6 +34,32 @@ def which_os():
 		return 'windows'
 	else:
 		return None
+
+class _Find():
+	def __init__(self, shell):
+		self.sh = shell
+
+	def directories_with(self, pattern, path=None):
+		# TODO: increase efficiency, possibly using walk
+		all_file_instances = self.recurse(pattern, path=path)
+		all_dirs = [self.sh.dirname(p) for p in all_file_instances]
+		dirs_without_repeats = list(set(all_dirs))
+		return dirs_without_repeats
+
+	def here(self, pattern, path=None):
+		if path != None: self.sh.cd(path)
+		if self.sh.verbose:
+			print('Searching one level in directory: ', path if path else self.sh.working)
+			print('\tfor pattern: ', pattern)
+		return glob(pattern, recursive=False)
+
+	def recurse(self, pattern, path=None):
+		if path != None: self.sh.cd(path)
+		if self.sh.verbose:
+			print('Searching recursively in directory: ', path if path else self.sh.working)
+			print('\tfor pattern: ', pattern)
+		return glob('**/' + pattern, recursive=True)
+
 
 class Shell():
 	def __init__(self):
@@ -45,10 +71,11 @@ class Shell():
 			mainFile = os.path.abspath(sys.modules['__main__'].__file__)
 			self.main = os.path.dirname(mainFile)
 		except: warn('no main file path, interactive interpreter')
+		self.find = _Find(self)
 		# option from command line
 		self.verbose = False
 		# operating system type
-		self.os = which_os()
+		self.os = _which_os()
 
 	def basename(self, path):
 		basename = os.path.basename(path)
@@ -83,13 +110,6 @@ class Shell():
 	def exists(self, path): # check for path of directory
 		if self.verbose: print('Checking the existance of path: ', path)
 		return os.path.exists(path)
-
-	def find(self, pattern, path=None):
-		if path != None: self.cd(path)
-		if self.verbose:
-			print('Searching recursively in directory: ', path if path else self.working)
-			print('\tfor pattern: ', pattern)
-		return glob('**/' + pattern, recursive=True)
 
 	def link(self, src, dest):
 		os.symlink(src, dest)

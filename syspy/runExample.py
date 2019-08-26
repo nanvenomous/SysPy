@@ -55,10 +55,14 @@ def open_file_in_browser():
   sh.chrome('dogs.com')
   print()
 
-def find_pattern_in_directory():
-  print('#### find_pattern_in_directory')
-  sh.verbose = True
-  print(sh.find('*.py'))
+def find_pattern_recursively_in_directory():
+  print('#### find_pattern_recursively_in_directory')
+  print(sh.find.recurse('*.py'))
+  print()
+
+def find_directories_containing_file_with_pattern():
+  print('#### find_directories_containing_file_with_pattern')
+  print(sh.find.directories_with('*.txt'))
   print()
 
 get_home_directory()
@@ -70,4 +74,5 @@ print_example_validation()
 # make_file_executable()
 list_files_in_directory()
 # open_file_in_browser()
-find_pattern_in_directory()
+find_pattern_recursively_in_directory()
+find_directories_containing_file_with_pattern()
