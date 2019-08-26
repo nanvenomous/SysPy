@@ -16,6 +16,7 @@ def source_executables():
 	executables_to_clean = list(executables - sources)
 
 	# remove unecessary executables
+	# TODO: ensure the executable points to correct src
 	for exe in executables_to_clean:
 		sh.rm(extend(binDir, exe))
 
