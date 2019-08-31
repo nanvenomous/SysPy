@@ -7,6 +7,8 @@ def fail(): sys.exit(1)
 
 def succeed(): sys.exit(0)
 
+def tabPrint(*args, **kwargs): print('\t', *args, **kwargs)
+
 def getInputs(): return sys.argv[1:]
 
 def error(msg):
