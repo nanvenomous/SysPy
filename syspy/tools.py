@@ -1,6 +1,6 @@
 import getopt, os, sys
 from glob import glob
-from subprocess import call
+from subprocess import call, check_output
 from select import select
 
 def fail(): sys.exit(1)
@@ -51,15 +51,15 @@ class _Find():
   def here(self, pattern, path=None):
     if path != None: self.sh.cd(path)
     if self.sh.verbose:
-      print('Searching one level in directory: ', path if path else self.sh.working)
-      print('\tfor pattern: ', pattern)
+      print('Searching one level in directory: ', path if path else self.sh.working, \
+         'for pattern: ', pattern)
     return glob(pattern, recursive=False)
 
   def recurse(self, pattern, path=None):
     if path != None: self.sh.cd(path)
     if self.sh.verbose:
-      print('Searching recursively in directory: ', path if path else self.sh.working)
-      print('\tfor pattern: ', pattern)
+      print('Searching recursively in directory: ', path if path else self.sh.working, \
+         'for pattern: ', pattern)
     return glob('**/' + pattern, recursive=True)
 
 
@@ -79,6 +79,12 @@ class Shell():
     self.verbose = False
     # operating system type
     self.os = _which_os()
+
+  def respond(self, cmd_list):
+    if self.verbose: print(' '.join(cmd_list))
+    byte_output = check_output(cmd_list)
+    string_output = byte_output.decode('utf-8')
+    return string_output
 
   def basename(self, path):
     basename = os.path.basename(path)

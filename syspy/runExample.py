@@ -46,7 +46,9 @@ def make_file_executable():
 def list_files_in_directory():
   print('#### List all files in a directory')
   dir_files = sh.ls(sh.main)
+  out = sh.respond(['ls'])
   print(dir_files)
+  print(out)
   print()
 
 def open_file_in_browser():
