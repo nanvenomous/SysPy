@@ -118,7 +118,7 @@ class Shell():
 
   def exists(self, path): # check for path of directory
     if self.verbose: print('Checking the existance of path: ', path)
-    return os.path.exists(path)
+    return os.path.exists(path.strip())
 
   def link(self, src, dest):
     os.symlink(src, dest)
