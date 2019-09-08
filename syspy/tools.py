@@ -104,7 +104,7 @@ class Shell():
         '&>/dev/null'
         ])
     elif self.os == 'mac':
-      error('no mac implementation yet')
+      self.command(['open -a', '"Google Chrome"', url])
 
   def command(self, cmd_list):
     cmd = ' '.join(cmd_list)
