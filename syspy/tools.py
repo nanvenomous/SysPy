@@ -111,6 +111,11 @@ class Shell():
     if self.verbose: print(cmd)
     os.system(cmd)
 
+  def delete(self, path):
+    import shutil
+    if self.verbose: print('Recursively removing: ', path)
+    shutil.rmtree(path)
+
   def dirname(self, path):
     dirname = os.path.dirname(path)
     if self.verbose: print('Dirname of ', path, ' is ', dirname)

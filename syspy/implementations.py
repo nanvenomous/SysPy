@@ -10,15 +10,16 @@ def source_executables():
 	if not sh.exists(srcDir): # no source, can't run
 		warn('no source to convert to executables at: ' + sh.main)
 		return
-	sources = set(sh.ls(srcDir))
-	executables = set(sh.ls(binDir))
-	unlinked_sources = list(sources - executables)
-	executables_to_clean = list(executables - sources)
+	sources = sh.ls(srcDir)
+	executables = sh.ls(binDir)
+	unlinked_sources = list(set(sources) - set(executables))
 
-	# remove unecessary executables
-	# TODO: ensure the executable points to correct src
-	for exe in executables_to_clean:
-		sh.rm(extend(binDir, exe))
+	# get all full executable paths
+	exe_paths = [extend(binDir, exe) for exe in executables]
+	# remove the exe if the source does not exist
+	for exe_path in exe_paths:
+		src = sh.respond(['readlink', '-f', exe_path])
+		if not sh.exists(src): sh.rm(exe_path)
 
 	# helper
 	def get_correct_source(pkg):
