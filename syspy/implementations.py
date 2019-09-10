@@ -1,4 +1,5 @@
 from .tools import Shell, error, validate, warn, extend
+extensions = ['.sh', '.py', '.js']
 
 def source_executables():
 	sh = Shell()
@@ -23,12 +24,10 @@ def source_executables():
 	# helper
 	def get_correct_source(pkg):
 		pkgDir = extend(srcDir, pkg)
-		srcFile = pkg + '.sh'
-		if (srcFile in sh.ls(pkgDir)):
-			return extend(pkgDir, srcFile)
-		srcFile = pkg + '.py'
-		if (srcFile in sh.ls(pkgDir)):
-			return extend(pkgDir, srcFile)
+		for extension in extensions:
+			srcFile = pkg + extension
+			if (srcFile in sh.ls(pkgDir)):
+				return extend(pkgDir, srcFile)
 		error('could not find correct file type in: \n\t' + pkgDir)
 
 	# make every source file executable
