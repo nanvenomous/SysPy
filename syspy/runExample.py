@@ -68,6 +68,9 @@ def find_directories_containing_file_with_pattern():
 	print(sh.find.directories_with('*.txt'))
 	print()
 
+def kill_pid_from_command_name():
+  sh.kill('cntlm')
+
 get_home_directory()
 # remove_file()
 create_directory_if_nonexistent()
@@ -78,4 +81,5 @@ print_example_validation()
 list_files_in_directory()
 find_pattern_recursively_in_directory()
 find_directories_containing_file_with_pattern()
-open_file_in_browser()
+# open_file_in_browser()
+kill_pid_from_command_name()
