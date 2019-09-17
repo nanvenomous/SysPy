@@ -80,9 +80,9 @@ class Shell():
     # operating system type
     self.os = _which_os()
 
-  def respond(self, cmd_list):
+  def respond(self, cmd_list, shell=False):
     if self.verbose: print(' '.join(cmd_list))
-    byte_output = check_output(cmd_list)
+    byte_output = check_output(cmd_list, shell=shell)
     string_output = byte_output.decode('utf-8')
     return string_output
 
