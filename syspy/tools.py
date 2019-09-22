@@ -139,8 +139,17 @@ class Shell():
     try:
       os.mkdir(path)
       if self.verbose: print('made directory: ', path)
-    except:
-      if self.verbose: print('failed to make directory: ', path)
+    except Exception:
+      print(Exception)
+      error('failed to make directory: ' + path)
+
+  def mv(self, from_path, to_path):
+    try:
+      os.rename(from_path, to_path)
+      if self.verbose: print('renaming directory: ', from_path, ' to ', to_path)
+    except Exception:
+      print(Exception)
+      error('failed to rename directory: ' + from_path + ' to ' + to_path)
 
   def rm(self, file):
     if self.verbose: print('removing: ', file)
