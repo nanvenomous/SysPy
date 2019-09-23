@@ -1,4 +1,4 @@
-import getopt, os, sys
+import getopt, os, sys, traceback, shutil
 from glob import glob
 from subprocess import call, check_output
 from select import select
@@ -36,6 +36,17 @@ def _which_os():
     return 'windows'
   else:
     return None
+
+class _Suppressor():
+  def __enter__(self):
+    self.stdout = sys.stdout
+    sys.stdout = self
+  def __exit__(self, type, value, traceback):
+    sys.stdout = self.stdout
+    if type is not None: # Do normal exception handling
+      pass
+  def write(self, x): pass
+suppressor = _Suppressor() # example usage: "with suppressor: my_function()"
 
 class _Find():
   def __init__(self, shell):
@@ -80,10 +91,11 @@ class Shell():
     # operating system type
     self.os = _which_os()
 
-  def respond(self, cmd_list):
+  def respond(self, cmd_list, strip=False):
     if self.verbose: print(' '.join(cmd_list))
     byte_output = check_output(cmd_list)
     string_output = byte_output.decode('utf-8')
+    if strip: return string_output.strip()
     return string_output
 
   def basename(self, path):
@@ -111,8 +123,12 @@ class Shell():
     if self.verbose: print(cmd)
     os.system(cmd)
 
+  def cp(self, from_file, to_file):
+    if self.verbose: print('Copying from ', from_file, ' to ', to_file)
+    if self.exists(to_file): self.delete(to_file)
+    shutil.copytree(from_file, to_file)
+
   def delete(self, path):
-    import shutil
     if self.verbose: print('Recursively removing: ', path)
     shutil.rmtree(path)
 

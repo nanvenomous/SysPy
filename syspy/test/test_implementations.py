@@ -1,36 +1,43 @@
 import unittest
-import os, sys, shutil
+import os, sys, shutil, traceback
 
-def copy_and_overwrite(from_path, to_path):
-	if os.path.exists(to_path): shutil.rmtree(to_path)
-	shutil.copytree(from_path, to_path)
+from .. import source_executables
+from .. import Shell, suppressor
+sh = Shell()
 
-
-main = os.path.dirname(os.path.abspath(sys.modules['__main__'].__file__))
+def quietly_source_executables():
+  with suppressor: source_executables()
 
 #__________________________________________________
 # Directories
-for_testing = os.path.join(main, 'for_testing')
+for_testing = os.path.join(sh.main, 'for_testing')
 hidden_src = os.path.join(for_testing, 'src')
-srcDir = os.path.join(main, 'src')
-binDir = os.path.join(main, 'bin')
+srcDir = os.path.join(sh.main, 'src')
+binDir = os.path.join(sh.main, 'bin')
+#__________________________________________________
 
 class Test_Source_Executables(unittest.TestCase):
-	@classmethod
-	def setUpClass(cls):
-		from .. import source_executables
-		copy_and_overwrite(hidden_src, srcDir)
-		source_executables()
+  @classmethod
+  def setUpClass(cls):
+    sh.cp(hidden_src, srcDir)
+    source_executables()
+    # quietly_source_executables()
 
-	def test_bin_directory_exists(self):
-		self.assertTrue(os.path.exists(binDir.strip()))
+  def test_src_directory_exists(self):
+    self.assertTrue(os.path.exists(srcDir.strip()))
 
-	def test_src_directory_exists(self):
-		self.assertTrue(os.path.exists(srcDir.strip()))
+  def test_bin_directory_exists(self):
+    self.assertTrue(os.path.exists(binDir.strip()))
 
-	@classmethod
-	def tearDownClass(cls):
-		shutil.rmtree(srcDir)
-		shutil.rmtree(binDir)
+  def test_executables_work(self):
+    sh_out = sh.respond(['./bin/sh_pkg'], strip=True)
+    self.assertEqual(sh_out, 'i am a shell script')
+    py_out = sh.respond(['./bin/py_pkg'], strip=True)
+    self.assertEqual(py_out, 'i am a python package')
+
+  @classmethod
+  def tearDownClass(cls):
+    sh.delete(srcDir)
+    sh.delete(binDir)
 
 if __name__ == '__main__': unittest.main()
