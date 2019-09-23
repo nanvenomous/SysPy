@@ -91,9 +91,10 @@ class Shell():
     # operating system type
     self.os = _which_os()
 
-  def respond(self, cmd_list, strip=False):
-    if self.verbose: print(' '.join(cmd_list))
-    byte_output = check_output(cmd_list)
+  def respond(self, cmd_str_or_lst, shell=False, strip=False):
+    cmd = ' '.join(cmd_str_or_lst) if (type(cmd_str_or_lst) == type([])) else cmd_str_or_lst
+    if self.verbose: print(cmd)
+    byte_output = check_output(cmd, shell=shell)
     string_output = byte_output.decode('utf-8')
     if strip: return string_output.strip()
     return string_output
@@ -116,12 +117,13 @@ class Shell():
         '&>/dev/null'
         ])
     elif self.os == 'mac':
-      self.command(['open -a', '"Google Chrome"', url])
+      self.command(['open -a', 'Google\ Chrome', url])
 
   def command(self, cmd_list):
     cmd = ' '.join(cmd_list)
     if self.verbose: print(cmd)
-    os.system(cmd)
+    status = os.system(cmd)
+    return status
 
   def cp(self, from_file, to_file):
     if self.verbose: print('Copying from ', from_file, ' to ', to_file)
@@ -140,6 +142,13 @@ class Shell():
   def exists(self, path): # check for path of directory
     if self.verbose: print('Checking the existance of path: ', path)
     return os.path.exists(path.strip())
+
+  def kill(self, command_name):
+    if self.os == 'mac':
+      pid = self.pid(command_name)
+    else: error('Shell.kill is not yet implemented for this operating system')
+    status = self.command(['kill', '-9', pid])
+    if status == 0: validate('killed ' + command_name + ' running with id ' + pid)
 
   def link(self, src, dest):
     os.symlink(src, dest)
@@ -166,6 +175,14 @@ class Shell():
     except Exception:
       print(Exception)
       error('failed to rename directory: ' + from_path + ' to ' + to_path)
+
+  def pid(self, command_name):
+    try: 
+      if self.os == 'mac':
+        pid = self.respond(['pgrep', command_name], shell=True, strip=True)
+      else: error('Shell.pid is not yet implemented for this operating system')
+    except: error('failed to get a process id for the command name: ' + command_name)
+    return pid
 
   def rm(self, file):
     if self.verbose: print('removing: ', file)

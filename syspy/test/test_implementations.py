@@ -20,8 +20,7 @@ class Test_Source_Executables(unittest.TestCase):
   @classmethod
   def setUpClass(cls):
     sh.cp(hidden_src, srcDir)
-    source_executables()
-    # quietly_source_executables()
+    quietly_source_executables()
 
   def test_src_directory_exists(self):
     self.assertTrue(os.path.exists(srcDir.strip()))
