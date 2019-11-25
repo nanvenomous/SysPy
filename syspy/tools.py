@@ -172,13 +172,13 @@ class Shell():
     return pid
 
   def vim(self, name):
+    vim = os.environ.get('EDITOR', 'vim') # create editor
     if type(name) == type([]):
       if len(name) > 1: raise TypeError('too many input arguments')
       if len(name) == 0:
-        self.command(['vim'])
+        self.command([vim])
         return 0
       else: name = name[0]
-    vim = os.environ.get('EDITOR', 'vim') # create editor
     if self.is_dir(name):
       self.command([vim, name])
       return 0
@@ -191,6 +191,10 @@ class Shell():
 def open_file_with_vim(vim, name, permission):
   with open(name, permission) as tf:
     call([vim, tf.name])
+
+# TODO: return aliasable method names for automation
+# def get_method_names():
+#   [method_name for method_name in dir(Shell) if callable(getattr(Shell, method_name))]
 
 def parseOptions(args, shortOpts, longOpts):
   try:

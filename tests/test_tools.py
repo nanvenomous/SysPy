@@ -4,7 +4,7 @@ from mock.mock import Mock
 
 call = Mock()
 
-from syspy.tools import Shell
+from syspy import Shell
 
 sh = Shell()
 
@@ -17,27 +17,34 @@ def test_moving_a_file(mock_rename):
   mock_rename.assert_called_with('ex.txt', 'example')
 
 
-@patch('syspy.tools.xsh.vi')
-class TestVi:
-  def test_editor_cannot_take_2_arguments(self, mock_vi):
+@patch('syspy.tools.Shell.is_dir')
+@patch('syspy.tools.Shell.command')
+@patch('syspy.tools.open_file_with_vim')
+class TestVim:
+  def test_editor_cannot_take_2_arguments(self, mock_open_vim, mock_command, mock_is_dir):
     with pytest.raises(TypeError):
-      sh.vi(['one', 'two'])
-      assert not mock_vi.called
+      sh.vim(['one', 'two'])
+      assert not mock_open_vim.called
+      assert not mock_command.called
 
-  def test_editor_opens_file_from_list(self, mock_vi):
-    ret = sh.vi(['ex.txt'])
+  def test_editor_opens_file_from_list(self, mock_open_vim, mock_command, mock_is_dir):
+    mock_is_dir.return_value = False
+    ret = sh.vim(['ex.txt'])
     assert ret == 0
-    mock_vi.assert_called_with('ex.txt')
+    mock_open_vim.assert_called_with('vim', 'ex.txt', 'r+')
+    assert not mock_command.called
 
-  def test_editor_opens_file_from_string(self, mock_vi):
-    ret = sh.vi('ex.txt')
+  def test_editor_opens_file_from_string(self, mock_open_vim, mock_command, mock_is_dir):
+    mock_is_dir.return_value = False
+    ret = sh.vim('ex.txt')
     assert ret == 0
-    mock_vi.assert_called_with('ex.txt')
+    mock_open_vim.assert_called_with('vim', 'ex.txt', 'r+')
+    assert not mock_command.called
 
-  def test_editor_empty_call(self, mock_vi):
-    ret = sh.vi([])
+  def test_editor_empty_call(self, mock_open_vim, mock_command, mock_is_dir):
+    ret = sh.vim([])
     assert ret == 0
-    mock_vi.assert_called_with(None)
+    mock_command.assert_called_with(['vim'])
 
 def teardown_module(module):
   pass

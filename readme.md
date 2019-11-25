@@ -2,6 +2,9 @@
 
 [on github](https://github.com/mrgarelli/PySys)
 
+# Testing
+> python3 -m pytest
+
 # Adding syspy to your system
 
 ### install
