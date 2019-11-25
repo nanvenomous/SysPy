@@ -1,4 +1,4 @@
-from ..tools import Shell, extend
+from ..shell import Shell, extend
 extensions = ['.sh', '.py', '.js']
 
 def source_executables():

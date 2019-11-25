@@ -3,8 +3,8 @@ from glob import glob
 from subprocess import call, check_output
 from select import select
 
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__))) # xonsh needs this to import locally
-from Log import Log
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from tools import Log
 
 def extend(loc, extenstion):
   return os.path.join(loc, extenstion)
@@ -171,8 +171,9 @@ class Shell():
     except: self.log.error('failed to get a process id for the command name: ' + command_name)
     return pid
 
-  def vim(self, name):
-    vim = os.environ.get('EDITOR', 'vim') # create editor
+  def vim(self, name, SystemEditor=False):
+    if SystemEditor: vim = os.environ.get('EDITOR', 'vim') # create editor
+    else: vim = 'vim'
     if type(name) == type([]):
       if len(name) > 1: raise TypeError('too many input arguments')
       if len(name) == 0:
@@ -195,21 +196,3 @@ def open_file_with_vim(vim, name, permission):
 # TODO: return aliasable method names for automation
 # def get_method_names():
 #   [method_name for method_name in dir(Shell) if callable(getattr(Shell, method_name))]
-
-def parseOptions(args, shortOpts, longOpts):
-  try:
-    options, remainder = getopt.getopt(
-      args,
-      shortOpts,
-      longOpts
-      )
-    command = None
-    try:
-      command = remainder[0]
-      remainder = remainder[1:]
-    except:
-      remainder = None
-    return options, command, remainder
-  except getopt.GetoptError as err:
-    print(err)
-    # self.log.error('parsing the options failed')
