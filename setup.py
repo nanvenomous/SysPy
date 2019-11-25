@@ -13,7 +13,7 @@ def get_test_suite():
 if __name__ == '__main__':
 	setuptools.setup(
 		name="syspy",
-		version="0.0.52",
+		version="0.0.54",
 		author="Matthew Garelli",
 		author_email="mgarelli@alumni.stanford.edu",
 		description="A module to do certain unix system tasks",

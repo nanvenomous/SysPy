@@ -3,26 +3,8 @@ from glob import glob
 from subprocess import call, check_output
 from select import select
 
-def fail(): sys.exit(1)
-
-def succeed(): sys.exit(0)
-
-def tabPrint(*args, **kwargs): print('\t', *args, **kwargs)
-
-def getInputs(): return sys.argv[1:]
-
-def error(msg):
-  context = '\033[91m {}\033[00m'.format('[ERROR] ')
-  print(context + msg)
-  fail()
-
-def warn(msg):
-  context = '\033[33m {}\033[00m'.format('[WARNING] ')
-  print(context + msg)
-
-def validate(msg):
-  context = '\033[92m {}\033[00m'.format('[LIT] ')
-  print(context + msg)
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__))) # xonsh needs this to import locally
+from Log import Log
 
 def extend(loc, extenstion):
   return os.path.join(loc, extenstion)
@@ -76,6 +58,9 @@ class _Find():
 
 class Shell():
   def __init__(self):
+    # option from command line
+    self.verbose = False
+    self.log = Log()
     # relevant directories
     self.home = os.path.expanduser('~')
     self.working = os.getcwd()
@@ -84,10 +69,8 @@ class Shell():
       exeFile = os.path.abspath(sys.modules['__main__'].__file__)
       srcFile = os.path.realpath(exeFile) # resolve symlinks
       self.main = os.path.dirname(srcFile)
-    except: warn('no main file path, interactive interpreter')
+    except: self.log.warn('no main file path, interactive interpreter')
     self.find = _Find(self)
-    # option from command line
-    self.verbose = False
     # operating system type
     self.os = _which_os()
 
@@ -111,13 +94,13 @@ class Shell():
   def chrome(self, url):
     if self.os == 'linux':
       self.command([
-        '/usr/bin/chromium-browser',
+        'google-chrome-stable',
         '--disable-features=NetworkService',
         url,
         '&>/dev/null'
         ])
     elif self.os == 'mac':
-      self.command(['open -a', 'Google\ Chrome', url])
+      self.command(['open -a', r'Google Chrome', url])
 
   def command(self, cmd_list):
     cmd = ' '.join(cmd_list)
@@ -128,11 +111,13 @@ class Shell():
   def cp(self, from_file, to_file):
     if self.verbose: print('Copying from ', from_file, ' to ', to_file)
     if self.exists(to_file): self.delete(to_file)
-    shutil.copytree(from_file, to_file)
+    if os.path.isdir(from_file): shutil.copytree(from_file, to_file)
+    else: shutil.copyfile(from_file, to_file)
 
-  def delete(self, path):
+  def rm(self, path):
     if self.verbose: print('Recursively removing: ', path)
-    shutil.rmtree(path)
+    if os.path.isdir(path): shutil.rmtree(path)
+    else: os.remove(path)
 
   def dirname(self, path):
     dirname = os.path.dirname(path)
@@ -143,12 +128,16 @@ class Shell():
     if self.verbose: print('Checking the existance of path: ', path)
     return os.path.exists(path.strip())
 
+  def is_dir(self, path): # check for path of directory
+    if self.verbose: print('Checking if is dir, path: ', path)
+    return os.path.isdir(path.strip())
+
   def kill(self, command_name):
     if self.os == 'mac':
       pid = self.pid(command_name)
-    else: error('Shell.kill is not yet implemented for this operating system')
+    else: self.log.error('Shell.kill is not yet implemented for this operating system')
     status = self.command(['kill', '-9', pid])
-    if status == 0: validate('killed ' + command_name + ' running with id ' + pid)
+    if status == 0: self.log.validate('killed ' + command_name + ' running with id ' + pid)
 
   def link(self, src, dest):
     os.symlink(src, dest)
@@ -164,29 +153,44 @@ class Shell():
     try:
       os.mkdir(path)
       if self.verbose: print('made directory: ', path)
-    except Exception:
-      print(Exception)
-      error('failed to make directory: ' + path)
+    except Exception as e:
+      self.log.error('failed to make directory: ' + path)
 
   def mv(self, from_path, to_path):
     try:
       os.rename(from_path, to_path)
       if self.verbose: print('renaming directory: ', from_path, ' to ', to_path)
-    except Exception:
-      print(Exception)
-      error('failed to rename directory: ' + from_path + ' to ' + to_path)
+    except Exception as e:
+      raise e
 
   def pid(self, command_name):
     try: 
       if self.os == 'mac':
         pid = self.respond(['pgrep', command_name], shell=True, strip=True)
-      else: error('Shell.pid is not yet implemented for this operating system')
-    except: error('failed to get a process id for the command name: ' + command_name)
+      else: self.log.error('Shell.pid is not yet implemented for this operating system')
+    except: self.log.error('failed to get a process id for the command name: ' + command_name)
     return pid
 
-  def rm(self, file):
-    if self.verbose: print('removing: ', file)
-    os.remove(file)
+  def vim(self, name):
+    if type(name) == type([]):
+      if len(name) > 1: raise TypeError('too many input arguments')
+      if len(name) == 0:
+        self.command(['vim'])
+        return 0
+      else: name = name[0]
+    vim = os.environ.get('EDITOR', 'vim') # create editor
+    if self.is_dir(name):
+      self.command([vim, name])
+      return 0
+    try:
+      open_file_with_vim(vim, name, 'r+') # open file to read
+    except:
+      open_file_with_vim(vim, name, 'w+') # open file to write
+    return 0
+
+def open_file_with_vim(vim, name, permission):
+  with open(name, permission) as tf:
+    call([vim, tf.name])
 
 def parseOptions(args, shortOpts, longOpts):
   try:
@@ -204,17 +208,4 @@ def parseOptions(args, shortOpts, longOpts):
     return options, command, remainder
   except getopt.GetoptError as err:
     print(err)
-    error('parsing the options failed')
-
-def vim(name):
-  vim = os.environ.get('EDITOR', 'vim') # create editor
-  def open_file_with_vim(permission):
-    with open(name, permission) as tf:
-      call([vim, tf.name])
-  try:
-    open_file_with_vim('r+') # open file to read
-  except:
-    open_file_with_vim('w+') # open file to write
-
-# supressing stdout
-# https://stackoverflow.com/questions/2828953/silence-the-stdout-of-a-function-in-python-without-trashing-sys-stdout-and-resto
+    # self.log.error('parsing the options failed')
