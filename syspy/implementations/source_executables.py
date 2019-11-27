@@ -19,8 +19,7 @@ def source_executables():
   exe_paths = [extend(binDir, exe) for exe in executables]
   # remove the exe if the source does not exist
   for exe_path in exe_paths:
-    src = sh.respond(['readlink', '-f', exe_path])
-    if not sh.exists(src): sh.rm(exe_path)
+    if not sh.readlink(exe_path): sh.rm(exe_path)
 
   def get_correct_source(pkg):
     pkgDir = extend(srcDir, pkg)

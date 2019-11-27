@@ -142,14 +142,13 @@ class Shell():
   def link(self, src, dest):
     os.symlink(src, dest)
 
-  def readlink(self, path):
-    try:
-      source = os.readlink(path)
-      if self.verbose: self.log.validate('the symlink at, ' + path + ', resolved')
+  def readlink(self, link_path):
+    source = os.readlink(link_path)
+    if self.exists(source):
+      if self.verbose: self.log.validate('the symlink at, ' + link_path + ', resolved')
       return source
-    except:
-      if self.verbose: print('the symlink at, ' + path + ', did not resolved')
-      return False
+    if self.verbose: print('link, ' + link_path + ', exists, but did not resolve')
+    return False
 
   def ls(self, path):
     if self.verbose: print('Listing files in directory: ', path)
