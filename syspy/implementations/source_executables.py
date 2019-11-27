@@ -1,5 +1,5 @@
 from ..shell import Shell, extend
-extensions = ['.sh', '.py', '.js']
+extensions = ['.sh', '.py', '.js', '.xsh']
 
 def source_executables():
   sh = Shell()
@@ -22,8 +22,6 @@ def source_executables():
     src = sh.respond(['readlink', '-f', exe_path])
     if not sh.exists(src): sh.rm(exe_path)
 
-  # helper
-  # helper
   def get_correct_source(pkg):
     pkgDir = extend(srcDir, pkg)
     for extension in extensions:

@@ -6,7 +6,7 @@ with open("readme.md", "r") as fh:
 if __name__ == '__main__':
 	setuptools.setup(
 		name="syspy",
-		version="0.0.57",
+		version="0.0.60",
 		author="Matthew Garelli",
 		author_email="mgarelli@alumni.stanford.edu",
 		description="A module to do certain unix system tasks",

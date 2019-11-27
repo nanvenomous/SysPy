@@ -142,6 +142,15 @@ class Shell():
   def link(self, src, dest):
     os.symlink(src, dest)
 
+  def readlink(self, path):
+    try:
+      source = os.readlink(path)
+      if self.verbose: self.log.validate('the symlink at, ' + path + ', resolved')
+      return source
+    except:
+      if self.verbose: print('the symlink at, ' + path + ', did not resolved')
+      return False
+
   def ls(self, path):
     if self.verbose: print('Listing files in directory: ', path)
     return os.listdir(path)
@@ -150,11 +159,11 @@ class Shell():
     self.command(['chmod +x', file])
 
   def mkdir(self, path):
-    try:
-      os.mkdir(path)
-      if self.verbose: print('made directory: ', path)
-    except Exception as e:
-      self.log.error('failed to make directory: ' + path)
+    if self.is_dir(path):
+      self.log.validate('directory, ' + path + ', already exists')
+      return
+    os.mkdir(path)
+    if self.verbose: print('made directory: ', path)
 
   def mv(self, from_path, to_path):
     try:
