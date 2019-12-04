@@ -100,7 +100,7 @@ class Shell():
         '&>/dev/null'
         ])
     elif self.os == 'mac':
-      self.command(['open -a', r'Google Chrome', url])
+      self.command(['open -a', r'Google\ Chrome', url])
 
   def command(self, cmd_list):
     cmd = ' '.join(cmd_list)
