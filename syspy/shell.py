@@ -103,7 +103,8 @@ class Shell():
       self.command(['open -a', r'Google\ Chrome', url])
 
   def command(self, cmd_list):
-    cmd = ' '.join(cmd_list)
+    if isinstance(cmd_list, str): cmd = cmd_list
+    else: cmd = ' '.join(cmd_list)
     if self.verbose: print(cmd)
     status = os.system(cmd)
     return status
