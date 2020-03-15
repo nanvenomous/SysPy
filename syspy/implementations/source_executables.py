@@ -1,7 +1,7 @@
 from ..shell import extend
 
 def remove_unwanted(source_files):
-  toRemove = ['__init__.py']
+  toRemove = ['__init__.py', '__pycache__']
   return [sc for sc in source_files if sc not in toRemove]
 
 def source_executables(sh, extensions):

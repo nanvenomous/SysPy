@@ -7,7 +7,7 @@ call = Mock()
 # from syspy.implementations.source_executables import remove_unwanted
 from ..source_executables import remove_unwanted
 
-with_unwanted_file = ['file1', '__init__.py', 'file2']
+with_unwanted_file = ['file1', '__pycache__', '__init__.py', 'file2']
 sources_only = ['file1', 'file2']
 
 class TestRemoveUnwantedFiles:
