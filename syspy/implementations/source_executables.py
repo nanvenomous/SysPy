@@ -1,10 +1,9 @@
 from ..shell import extend
 
-def remove_unwanted(source_files):
-  toRemove = ['__init__.py', '__pycache__']
-  return [sc for sc in source_files if sc not in toRemove]
+def remove_unwanted(source_files, ignore_src):
+  return [sc for sc in source_files if sc not in ignore_src]
 
-def source_executables(sh, extensions):
+def source_executables(sh, extensions, ignore_src):
   binDir = extend(sh.main, 'bin')
   srcDir = extend(sh.main, 'src')
 
@@ -13,7 +12,7 @@ def source_executables(sh, extensions):
   if not sh.exists(srcDir): # no source, can't run
     sh.log.warn('no source to convert to executables at: ' + sh.main)
     return
-  sources = remove_unwanted(sh.ls(srcDir))
+  sources = remove_unwanted(sh.ls(srcDir), ignore_src)
   executables = sh.ls(binDir)
   unlinked_sources = list(set(sources) - set(executables))
 
