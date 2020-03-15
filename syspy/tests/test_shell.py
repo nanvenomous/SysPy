@@ -4,7 +4,7 @@ from mock.mock import Mock
 
 call = Mock()
 
-from syspy import Shell
+from ..shell import Shell
 
 sh = Shell()
 

@@ -111,7 +111,7 @@ class Shell():
 
   def cp(self, from_file, to_file):
     if self.verbose: print('Copying from ', from_file, ' to ', to_file)
-    if self.exists(to_file): self.delete(to_file)
+    if self.exists(to_file): self.rm(to_file)
     if os.path.isdir(from_file): shutil.copytree(from_file, to_file)
     else: shutil.copyfile(from_file, to_file)
 

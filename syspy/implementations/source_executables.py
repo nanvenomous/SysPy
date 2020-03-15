@@ -1,8 +1,10 @@
-from ..shell import Shell, extend
-extensions = ['.sh', '.py', '.js', '.xsh']
+from ..shell import extend
 
-def source_executables():
-  sh = Shell()
+def remove_unwanted(source_files):
+  toRemove = ['__init__.py']
+  return [sc for sc in source_files if sc not in toRemove]
+
+def source_executables(sh, extensions):
   binDir = extend(sh.main, 'bin')
   srcDir = extend(sh.main, 'src')
 
@@ -11,7 +13,7 @@ def source_executables():
   if not sh.exists(srcDir): # no source, can't run
     sh.log.warn('no source to convert to executables at: ' + sh.main)
     return
-  sources = sh.ls(srcDir)
+  sources = remove_unwanted(sh.ls(srcDir))
   executables = sh.ls(binDir)
   unlinked_sources = list(set(sources) - set(executables))
 
@@ -21,7 +23,7 @@ def source_executables():
   for exe_path in exe_paths:
     if not sh.readlink(exe_path): sh.rm(exe_path)
 
-  def get_correct_source(pkg):
+  def _get_correct_source(pkg):
     pkgDir = extend(srcDir, pkg)
     for extension in extensions:
       srcFile = pkg + extension
@@ -31,12 +33,12 @@ def source_executables():
 
   # make every source file executable
   for pkg in sources:
-    source = get_correct_source(pkg)
+    source = _get_correct_source(pkg)
     sh.make_executable(source)
 
   # link all sources to executables
   for pkg in unlinked_sources:
-    source = get_correct_source(pkg)
+    source = _get_correct_source(pkg)
     destination = extend(binDir, pkg)
     sh.link(source, destination)
     print(source, ' <--> ', destination)
